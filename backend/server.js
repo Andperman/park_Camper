@@ -24,22 +24,30 @@ app.get('/getLocations', async (req, res) => {
     // Devuelve los datos al frontend
     res.json(data);
 
-    // Procesa y guarda los datos en MongoDB
+    // Procesa y guarda los datos en MongoDB evitando duplicados
     if (data.lieux && data.lieux.length > 0) {
-      const locationsToSave = data.lieux.map(location => ({
-        latitude: parseFloat(location.latitude),
-        longitude: parseFloat(location.longitude),
-        title: location.titre,
-        name: location.name,
-        description: location.description_es,
-        image: location.photos?.[0]?.link_large || null,
-        precio: location.prix_stationnement,
-        precioServicio: location.prix_services,
-        fecha: location.data_fermature ? new Date(location.data_fermature) : null,
-      }));
+      for (const location of data.lieux) {
+        const existingLocation = await Location.findOne({ title: location.titre });
 
-      await Location.insertMany(locationsToSave);
-      console.log('Ubicaciones guardadas en MongoDB.');
+        if (!existingLocation) {
+          const newLocation = new Location({
+            latitude: parseFloat(location.latitude),
+            longitude: parseFloat(location.longitude),
+            title: location.titre,
+            name: location.name,
+            description: location.description_es,
+            image: location.photos?.[0]?.link_large || null,
+            precio: location.prix_stationnement,
+            precioServicio: location.prix_services,
+            fecha: location.data_fermature ? new Date(location.data_fermature) : null,
+          });
+
+          await newLocation.save();
+          // console.log(`Ubicación guardada: ${location.titre}`);
+        } else {
+          // console.log(`Ubicación ya existe: ${location.titre}`);
+        }
+      }
     }
   } catch (error) {
     console.error('Error fetching or saving locations:', error);
