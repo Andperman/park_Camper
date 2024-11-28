@@ -6,7 +6,7 @@ const app = express();
 // Habilita CORS para todas las solicitudes (para todos los orígenes)
 app.use(cors());
 
-// Tu endpoint
+
 app.get('/getLocations', async (req, res) => {
   const { latitude, longitude } = req.query;
   try {
