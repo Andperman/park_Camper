@@ -6,23 +6,24 @@ import { MapContext } from '../../../context/MapContext';
 import MapService from '../../../services/MapService';
 
 const MapPage = () => {
-  const { locations, center, setLocations, setCenter } = useContext(MapContext);
+  const { locations, setLocations, center, setCenter } = useContext(MapContext);
   const [latitude, setLatitude] = useState('');
   const [longitude, setLongitude] = useState('');
 
   const handleSearch = async (e) => {
     e.preventDefault();
-
+  
     if (latitude && longitude) {
-      // Verifica si la latitud y longitud son válidas
       const lat = parseFloat(latitude);
       const lon = parseFloat(longitude);
-
+  
       if (!isNaN(lat) && !isNaN(lon)) {
-        // Buscar lugares cerca de las coordenadas
+        // Llamada a MapService para obtener las ubicaciones
         const fetchedLocations = await MapService.getLocations(lat, lon);
-
-        // Actualizar los lugares y el centro del mapa
+  
+        console.log("Ubicaciones obtenidas en handleSearch:", fetchedLocations);  // Verifica si se están obteniendo los datos correctamente
+  
+        // Actualizar el estado en el contexto
         setLocations(fetchedLocations);
         setCenter([lat, lon]);
       } else {
@@ -32,10 +33,10 @@ const MapPage = () => {
       alert('Por favor, ingresa tanto latitud como longitud.');
     }
   };
+  
 
   return (
     <div>
-      {/* Formulario de búsqueda */}
       <div style={{ margin: '10px' }}>
         <form onSubmit={handleSearch}>
           <input

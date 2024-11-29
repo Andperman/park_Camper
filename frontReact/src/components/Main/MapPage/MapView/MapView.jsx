@@ -7,7 +7,9 @@ const MapView = () => {
   const { locations } = useContext(MapContext);
   const navigate = useNavigate();
 
-  if (!locations.length) return null;
+  console.log("Ubicaciones recibidas en MapView:", locations);  // Verifica que las ubicaciones estén disponibles
+
+  if (!locations.length) return null; // Si no hay ubicaciones, no renderiza nada.
 
   return (
     <>
@@ -16,7 +18,6 @@ const MapView = () => {
           <Popup>
             <div>
               <img src={location.image} alt={location.name} style={{ width: '100px' }} />
-              {/* Redirige al usuario al hacer clic en el título */}
               <p
                 onClick={() => navigate(`/location/${index}`)} // Usa el índice como identificador
                 style={{ color: 'blue', textDecoration: 'underline', cursor: 'pointer' }}
