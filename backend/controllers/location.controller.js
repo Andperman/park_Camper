@@ -1,67 +1,46 @@
-// //crud para admin LOCATION //conectarlo a MONGO
-// // Crear ubicación (POST)
-// const createLocation = async (req, res) => {
-//     const { latitude, longitude, title, name, description, image, precio, precioServicio, fecha } = req.body;
+// controllers/locationController.js
+import fetch from 'node-fetch';  // Necesario para hacer solicitudes HTTP
+import Location from '../models/location.models.js';  // Importa el modelo de la ubicación
 
-//     try {
-//         const location = new Location({
-//             latitude: parseFloat(latitude),
-//             longitude: parseFloat(longitude),
-//             title,
-//             name,
-//             description,
-//             image: image || null,
-//             precio: parseFloat(precio),
-//             precioServicio: parseFloat(precioServicio),
-//             fecha: new Date(fecha)
-//         });
+const getLocations = async (req, res) => {
+  const { latitude, longitude } = req.query;
 
-//         // Guardamos la ubicación en MongoDB
-//         const savedLocation = await location.save();
+  try {
+    // Llamada a la API externa
+    const response = await fetch(
+      `http://guest.park4night.com/services/V4.1/lieuxGetFilter.php?latitude=${latitude}&longitude=${longitude}`
+    );
+    const data = await response.json();
 
-//         res.status(201).json({
-//             message: "Location created successfully",
-//             data: savedLocation
-//         });
-//     } catch (error) {
-//         console.log(`ERROR: ${error.stack}`);
-//         res.status(400).json({ msj: `ERROR: ${error.stack}` });
-//     }
-// };
+    // Devuelve los datos al frontend
+    res.json(data);
 
-// // Obtener todas las ubicaciones (GET)
-// const getAllLocations = async (req, res) => {
-//     try {
-//         const locations = await Location.find();  // Buscar todas las ubicaciones en la base de datos
-//         res.status(200).json(locations);  // Devolvemos las ubicaciones
-//     } catch (error) {
-//         console.log(`ERROR: ${error.stack}`);
-//         res.status(400).json({ msj: `ERROR: ${error.stack}` });
-//     }
-// };
+    // Procesa y guarda los datos en MongoDB evitando duplicados
+    if (data.lieux && data.lieux.length > 0) {
+      for (const location of data.lieux) {
+        const existingLocation = await Location.findOne({ title: location.titre });
 
-// // Eliminar ubicación (DELETE)
-// const deleteLocation = async (req, res) => {
-//     const { id } = req.params;
+        if (!existingLocation) {
+          const newLocation = new Location({
+            latitude: parseFloat(location.latitude),
+            longitude: parseFloat(location.longitude),
+            title: location.titre,
+            name: location.name,
+            description: location.description_es,
+            image: location.photos?.[0]?.link_large || null,
+            precio: location.prix_stationnement,
+            precioServicio: location.prix_services,
+            fecha: location.data_fermature ? new Date(location.data_fermature) : null,
+          });
 
-//     try {
-//         const deletedLocation = await Location.findByIdAndDelete(id);  // Buscar y eliminar por ID
+          await newLocation.save();
+        }
+      }
+    }
+  } catch (error) {
+    console.error('Error fetching or saving locations:', error);
+    res.status(500).json({ error: 'Error fetching or saving locations' });
+  }
+};
 
-//         if (deletedLocation) {
-//             res.status(200).json({
-//                 message: `Location: ${deletedLocation.name} deleted`
-//             });
-//         } else {
-//             res.status(404).json({ message: "Location not found" });
-//         }
-//     } catch (error) {
-//         console.log(`ERROR: ${error.stack}`);
-//         res.status(400).json({ msj: `ERROR: ${error.stack}` });
-//     }
-// };
-
-// module.exports = {
-//     createLocation,
-//     getAllLocations,
-//     deleteLocation,
-// }
+export default { getLocations };

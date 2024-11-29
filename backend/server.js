@@ -1,62 +1,69 @@
 import express from 'express';
-import cors from 'cors'; // Importa el paquete CORS
-import connectDB from './config/db_mongo.js'; // Conexión a MongoDB
-import Location from './models/location.models.js'; // Modelo de ubicación en MongoDB
+import cors from 'cors';
+import connectDB from './config/db_mongo.js'; 
+import { pool } from './config/db_pgSQL.js'; 
+import locationController from './controllers/location.controller.js'; 
+
+// Rutas 
+import userRoutes from './routes/user.routes.js'; // Rutas usuarios
+
 
 const app = express();
 
-// Habilita CORS para todas las solicitudes
-app.use(cors());
+//Middleware
+app.use(cors()); 
+app.use(express.json()); // Permite interpretar cuerpos JSON
 
-// Conecta con MongoDB
-connectDB();
 
-app.get('/getLocations', async (req, res) => {
-  const { latitude, longitude } = req.query;
+connectDB(); 
 
-  try {
-    // Llamada a la API externa
-    const response = await fetch(
-      `http://guest.park4night.com/services/V4.1/lieuxGetFilter.php?latitude=${latitude}&longitude=${longitude}`
-    );
-    const data = await response.json();
+// Rutas
+app.get('/getLocations', locationController.getLocations);
+// app.use('/api/locations', locationRoutes); // Prefijo para rutas de ubicaciones
+app.use('/api/users', userRoutes); // Prefijo rutas de usuarios
 
-    // Devuelve los datos al frontend
-    res.json(data);
 
-    // Procesa y guarda los datos en MongoDB evitando duplicados
-    if (data.lieux && data.lieux.length > 0) {
-      for (const location of data.lieux) {
-        const existingLocation = await Location.findOne({ title: location.titre });
-
-        if (!existingLocation) {
-          const newLocation = new Location({
-            latitude: parseFloat(location.latitude),
-            longitude: parseFloat(location.longitude),
-            title: location.titre,
-            name: location.name,
-            description: location.description_es,
-            image: location.photos?.[0]?.link_large || null,
-            precio: location.prix_stationnement,
-            precioServicio: location.prix_services,
-            fecha: location.data_fermature ? new Date(location.data_fermature) : null,
-          });
-
-          await newLocation.save();
-          // console.log(`Ubicación guardada: ${location.titre}`);
-        } else {
-          // console.log(`Ubicación ya existe: ${location.titre}`);
-        }
-      }
-    }
-  } catch (error) {
-    console.error('Error fetching or saving locations:', error);
-    res.status(500).json({ error: 'Error fetching or saving locations' });
-  }
-});
-
-// Configura el puerto del servidor
-const port = 4000;
+const port = 3000;
 app.listen(port, () => {
-  console.log(`Servidor corriendo en http://localhost:${port}`);
+  pool.query('SELECT NOW()', (err, res) => {
+    if (err) {
+      console.error('Error al conectar a la base de datos PostgreSQL:', err);
+    } else {
+      console.log('Conexión a PostgreSQL exitosa:', res.rows);
+    }
+  });
 });
+
+
+
+
+// import express from 'express';
+// import cors from 'cors';
+// import connectDB from './config/db_mongo.js';  // Importa la conexión a MongoDB
+// import locationController from './controllers/location.controller.js';  // Importa el controlador de la ruta
+// import connectPG from './config/db_pgSQL.js';  // Importa la conexión a PostgreSQL
+// import userRoutes from './routes/user.routes.js'; 
+
+// const app = express();
+
+// // Habilita CORS para todas las solicitudes
+// app.use(cors());
+
+// app.use(express.json()); // Necesario para que el servidor pueda interpretar cuerpos JSON
+
+// // Conecta con MongoDB
+// connectDB();
+// connectPG();
+// // Ruta para obtener las ubicaciones
+// app.get('/getLocations', locationController.getLocations);
+
+
+// //Rutas
+// app.use('/api/users', userRoutes); 
+
+
+// // Configura el puerto del servidor
+// const port = 3000;
+// app.listen(port, () => {
+//   console.log(Servidor corriendo en http://localhost:${port});
+// });    se puede organizar mejor?
