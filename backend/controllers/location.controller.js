@@ -48,7 +48,10 @@ export const createLocation = async (req, res) => {
     const locationData = req.body;
 
     try {
-        const newLocation = new Location(locationData);
+        const newLocation = new Location({
+            ...locationData, // Propiedades del lugar
+            manual: true, // Marca este lugar como manual
+        });
         await newLocation.save();
         res.status(201).json(newLocation);
     } catch (error) {
@@ -57,24 +60,45 @@ export const createLocation = async (req, res) => {
     }
 };
 
+
 // Eliminar una ubicación por ID
 export const deleteLocation = async (req, res) => {
     const { id } = req.params;
 
     try {
-        const deletedLocation = await Location.findByIdAndDelete(id);
-        if (deletedLocation) {
-            res.status(200).json({ message: 'Location deleted successfully', data: deletedLocation });
-        } else {
-            res.status(404).json({ error: 'Location not found' });
+        const location = await Location.findById(id);
+        if (!location) {
+            return res.status(404).json({ error: 'Location not found' });
         }
+
+        if (!location.manual) {
+            return res.status(403).json({ error: 'You can only delete manually created locations' });
+        }
+
+        // Si es una ubicación manual, elimínala
+        const deletedLocation = await Location.findByIdAndDelete(id);
+        res.status(200).json({ message: 'Location deleted successfully', data: deletedLocation });
     } catch (error) {
         console.error('Error deleting location:', error);
         res.status(500).json({ error: 'Error deleting location' });
     }
 };
 
-export default { getLocations, createLocation,deleteLocation };
+
+// Obtener solo las ubicaciones manuales
+export const getManualLocations = async (req, res) => {
+    try {
+        // Obtiene solo las ubicaciones creadas manualmente
+        const manualLocations = await Location.find({ manual: true });
+        res.status(200).json(manualLocations);
+    } catch (error) {
+        console.error('Error fetching manual locations:', error);
+        res.status(500).json({ error: 'Error fetching manual locations' });
+    }
+};
+
+
+export default { getLocations, createLocation,deleteLocation,getManualLocations };
 
 
 
