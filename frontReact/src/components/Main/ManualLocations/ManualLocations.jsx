@@ -23,7 +23,7 @@ const ManualLocations = () => {
   useEffect(() => {
     const fetchLocations = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/api/locations/manual');  // Cambia la URL según la ruta correcta de tu API
+        const response = await axios.get('http://localhost:3000/api/locations/manual'); 
         setLocations(response.data);
       } catch (error) {
         console.error('Error fetching locations:', error);
@@ -47,7 +47,7 @@ const ManualLocations = () => {
     
     try {
       // Enviar los datos al backend para crear la nueva ubicación
-      await axios.post('http://localhost:3000/api/locations', formData);  // Cambia la URL según la ruta de tu API
+      await axios.post('http://localhost:3000/api/locations', formData); 
       alert('Ubicación creada exitosamente');
       
       // Volver a cargar las ubicaciones después de crear una nueva

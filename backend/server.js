@@ -12,7 +12,7 @@ const app = express();
 
 //Middleware
 app.use(cors()); 
-app.use(express.json()); // Permite interpretar cuerpos JSON
+app.use(express.json()); 
 
 
 connectDB(); 
@@ -20,7 +20,7 @@ connectDB();
 // Rutas
 // app.get('/getLocations', locationController.getLocations);
 // app.use('/api/locations', locationRoutes); // Prefijo para rutas de ubicaciones
-app.use('/api', locationRoutes);
+app.use('/api', locationRoutes); //rutas localización
 app.use('/api/users', userRoutes); // Prefijo rutas de usuarios
 
 

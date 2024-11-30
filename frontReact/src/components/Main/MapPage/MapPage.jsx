@@ -23,7 +23,7 @@ const MapPage = () => {
         // Llamada a MapService para obtener las ubicaciones
         const fetchedLocations = await MapService.getLocations(lat, lon);
 
-        console.log("Ubicaciones obtenidas en handleSearch:", fetchedLocations);  // Verifica si se están obteniendo los datos correctamente
+        console.log("Ubicaciones obtenidas en handleSearch:", fetchedLocations);  
 
         // Actualizar el estado en el contexto
         setLocations(fetchedLocations);

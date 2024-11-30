@@ -27,7 +27,7 @@ const locationSchema = new mongoose.Schema({
   precio: { type: Number },
   precioServicio: { type: Number },
   fecha: { type: Date },
-  manual: { type: Boolean, default: false }, // Este campo indica si la ubicación fue creada manualmente
+  manual: { type: Boolean, default: false }, // Campo para ver manual o no 
 });
 
 const Location = mongoose.model('Location', locationSchema);

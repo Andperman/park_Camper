@@ -43,7 +43,6 @@ export const getUserByEmail = async (email) => {
 export const createUser = async (user) => {
     const { username, email, password} = user;
     let client, result;
-
     // Si el username es null o undefined, asigna uno por defecto
     const finalUsername = username ? username : email.split('@')[0]; 
     try {

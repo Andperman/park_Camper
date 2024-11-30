@@ -1,21 +1,18 @@
 
-import fetch from 'node-fetch';  // Necesario para hacer solicitudes HTTP
-import Location from '../models/location.models.js';  // Importa el modelo de la ubicación
+import fetch from 'node-fetch';  //para hacer solicitudes HTTP
+import Location from '../models/location.models.js';  
 
 export const getLocations = async (req, res) => {
     const { latitude, longitude } = req.query;
 
     try {
-        // Llamada a la API externa
         const response = await fetch(
             `http://guest.park4night.com/services/V4.1/lieuxGetFilter.php?latitude=${latitude}&longitude=${longitude}`
         );
         const data = await response.json();
-
         // Devuelve los datos al frontend
         res.json(data);
-
-        // Procesa y guarda los datos en MongoDB evitando duplicados
+        // guarda los datos en MongoDB  (lógica ducplicados)
         if (data.lieux && data.lieux.length > 0) {
             for (const location of data.lieux) {
                 const existingLocation = await Location.findOne({ title: location.titre });
@@ -43,14 +40,13 @@ export const getLocations = async (req, res) => {
     }
 };
 
-// Crear un nuevo lugar (manual)
+// CREAMOS A MANO CON EL FORMULARIO NUEVA LOCALIZACIÓN
 export const createLocation = async (req, res) => {
     const locationData = req.body;
-
     try {
         const newLocation = new Location({
-            ...locationData, // Propiedades del lugar
-            manual: true, // Marca este lugar como manual
+            ...locationData, 
+            manual: true,
         });
         await newLocation.save();
         res.status(201).json(newLocation);
@@ -60,8 +56,7 @@ export const createLocation = async (req, res) => {
     }
 };
 
-
-// Eliminar una ubicación por ID
+// ELIMINAR LOCALIZACIÓN MANUAL POR ID
 export const deleteLocation = async (req, res) => {
     const { id } = req.params;
 
@@ -74,8 +69,6 @@ export const deleteLocation = async (req, res) => {
         if (!location.manual) {
             return res.status(403).json({ error: 'You can only delete manually created locations' });
         }
-
-        // Si es una ubicación manual, elimínala
         const deletedLocation = await Location.findByIdAndDelete(id);
         res.status(200).json({ message: 'Location deleted successfully', data: deletedLocation });
     } catch (error) {
@@ -85,7 +78,7 @@ export const deleteLocation = async (req, res) => {
 };
 
 
-// Obtener solo las ubicaciones manuales
+// OBTENER SOLO LAS UBICACIONES MANUALES(PARA VISIÓN ADMIN)
 export const getManualLocations = async (req, res) => {
     try {
         // Obtiene solo las ubicaciones creadas manualmente
