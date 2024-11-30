@@ -2,19 +2,15 @@ import bcrypt from 'bcryptjs';
 import User from '../models/user.models.js';  
 
 
-// const { validationResult } = require("express-validator");
-
-// GET http://localhost:3000/users --> ALL
-// GET http://localhost:3000/users?email=hola@gmail.com --> query por email
-//todos usuarios
+//OBTENER TODOS LOS USUARIOS
 export const getAllUsers = async (req, res) => {
     let users;
     users = await User.getAllUsers();
 
-    res.status(200).json(users); // 
+    res.status(200).json(users); 
 }
 
-//usuarios por email 
+//OBTENER USUARIOS POR EMAIL 
 export const getUsersByEmail = async (req, res) => {
     const { email } = req.query;
     try {
@@ -30,7 +26,7 @@ export const getUsersByEmail = async (req, res) => {
     }
 }
 
-// Crear usuario //Post
+// CREAR USUARIOS (POST) (BODY: USERNAME/EMAIL/PASSWORD) REGISTER
 export const createUser = async (req, res) => {
     try {
       const { username, email, password } = req.body;
@@ -49,7 +45,7 @@ export const createUser = async (req, res) => {
     }
   };
 
-//borrar usuario
+//BORRAR USUARIO POR EMAIL
 export const deleteUserByEmail = async (req, res) => {
     const { email } = req.body;  
     console.log('Email received for deletion:', email);
@@ -69,7 +65,7 @@ export const deleteUserByEmail = async (req, res) => {
     }
 };
 
-
+//LOGIN USUARIO  (/login)
 export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -81,15 +77,12 @@ export const loginUser = async (req, res) => {
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
-
-    // Comparar la contraseña recibida con la almacenada (hashed)
+    // Compara la contraseña recibida con la almacenada (hashed)
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
-
-    // Si las credenciales son válidas, devuelve un mensaje o el usuario
     res.status(200).json({ message: 'Login successful', data: user });
   } catch (error) {
     console.error('Error logging in:', error);

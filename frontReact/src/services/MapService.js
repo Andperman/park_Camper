@@ -1,6 +1,9 @@
 const getLocations = async (latitude, longitude) => {
   try {
-      const response = await fetch(`http://localhost:3000/getLocations?latitude=${latitude}&longitude=${longitude}`);
+      // const response = await fetch(`http://localhost:3000/getLocations?latitude=${latitude}&longitude=${longitude}`);
+      // const response = await fetch(`http://localhost:3000/locations?latitude=${latitude}&longitude=${longitude}`);
+      const response = await fetch(`http://localhost:3000/api/locations?latitude=${latitude}&longitude=${longitude}`);
+
     
     if (!response.ok) {
       throw new Error(`Error fetching locations: ${response.statusText}`);

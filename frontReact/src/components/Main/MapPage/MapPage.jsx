@@ -4,25 +4,27 @@ import 'leaflet/dist/leaflet.css';
 import MapView from './MapView';
 import { MapContext } from '../../../context/MapContext';
 import MapService from '../../../services/MapService';
+import axios from 'axios';
 
 const MapPage = () => {
   const { locations, setLocations, center, setCenter } = useContext(MapContext);
   const [latitude, setLatitude] = useState('');
   const [longitude, setLongitude] = useState('');
+  const [onlyCreated, setOnlyCreated] = useState(false);  // Estado para filtrar ubicaciones
 
   const handleSearch = async (e) => {
     e.preventDefault();
-  
+
     if (latitude && longitude) {
       const lat = parseFloat(latitude);
       const lon = parseFloat(longitude);
-  
+
       if (!isNaN(lat) && !isNaN(lon)) {
         // Llamada a MapService para obtener las ubicaciones
         const fetchedLocations = await MapService.getLocations(lat, lon);
-  
-        console.log("Ubicaciones obtenidas en handleSearch:", fetchedLocations);  // Verifica si se están obteniendo los datos correctamente
-  
+
+        console.log("Ubicaciones obtenidas en handleSearch:", fetchedLocations);  
+
         // Actualizar el estado en el contexto
         setLocations(fetchedLocations);
         setCenter([lat, lon]);
@@ -33,7 +35,20 @@ const MapPage = () => {
       alert('Por favor, ingresa tanto latitud como longitud.');
     }
   };
-  
+
+  const handleFilterCreated = async () => {
+    try {
+      // Llamada a la API para obtener solo las ubicaciones creadas manualmente
+      const response = await axios.get('http://localhost:3000/api/locations/manual');
+      setLocations(response.data);
+      setOnlyCreated(true);  // Cambiar el estado para indicar que solo se verán las ubicaciones creadas
+    } catch (error) {
+      console.error('Error al obtener ubicaciones creadas:', error);
+      alert('Error al obtener ubicaciones creadas.');
+    }
+  };
+
+
 
   return (
     <div>
@@ -58,6 +73,14 @@ const MapPage = () => {
           </button>
         </form>
       </div>
+
+
+      {/* Botón para filtrar las ubicaciones creadas */}
+      <button
+        onClick={handleFilterCreated}
+        style={{ padding: '5px 10px', marginLeft: '5px' }}>
+        🏷️ Mostrar solo las creadas
+      </button>
 
       {/* Mapa */}
       <MapContainer center={center} zoom={13} style={{ height: '80vh', width: '100%' }}>
