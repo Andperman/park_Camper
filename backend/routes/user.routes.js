@@ -9,6 +9,7 @@ router.get('/email', userController.getUsersByEmail);
 router.post('/register', userController.createUser);
 router.post('/login', userController.loginUser);
 router.delete('/email', userController.deleteUserByEmail);
+router.post('/logout', userController.logout);
 
 // Ruta para obtener todos los favoritos de un usuario
 router.get("/user/:id", userController.getAllFavoritesFromUser);

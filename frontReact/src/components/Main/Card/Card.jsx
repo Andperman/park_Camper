@@ -46,10 +46,7 @@ const Card = () => {
   );
 };
 
-
-
-
-// export default Card;
+export default Card;
 
 // import React, { useContext, useState } from 'react';
 // import { useParams, useNavigate } from 'react-router-dom';

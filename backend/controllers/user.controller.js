@@ -1,5 +1,6 @@
 import bcrypt from 'bcryptjs';
 import User from '../models/user.models.js';  
+import { createToken} from '../config/jsonWebToken.js';
 
 
 //OBTENER TODOS LOS USUARIOS
@@ -66,27 +67,75 @@ export const deleteUserByEmail = async (req, res) => {
 };
 
 //LOGIN USUARIO  (/login)
+// export const loginUser = async (req, res) => {
+//   try {
+//     const { email, password } = req.body;
+//     if (!email || !password) {
+//       return res.status(400).json({ error: 'Email and password are required' });
+//     }
+//     const user = await User.getUserByEmail(email); 
+
+//     if (!user) {
+//       return res.status(404).json({ error: 'User not found' });
+//     }
+//     // Compara la contraseña recibida con la almacenada (hashed)
+//     const isMatch = await bcrypt.compare(password, user.password);
+
+//     if (!isMatch) {
+//       return res.status(401).json({ error: 'Invalid credentials' });
+//     }
+//     res.status(200).json({ message: 'Login successful', data: user });
+//   } catch (error) {
+//     console.error('Error logging in:', error);
+//     res.status(500).json({ error: 'Internal Server Error' });
+//   }
+// };
+
+
 export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
+
     if (!email || !password) {
       return res.status(400).json({ error: 'Email and password are required' });
     }
-    const user = await User.getUserByEmail(email); 
+
+    const user = await User.getUserByEmail(email);
 
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
+
     // Compara la contraseña recibida con la almacenada (hashed)
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
-    res.status(200).json({ message: 'Login successful', data: user });
+
+    // Crear el token
+    const token = createToken({ email: user.email, id: user.id });
+
+    // Configurar la respuesta con el token
+    res
+      .status(200)
+      .set('Authorization', `Bearer ${token}`) // Añadir el token en la cabecera
+      .json({ message: 'Login successful', token });
   } catch (error) {
     console.error('Error logging in:', error);
     res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
+const logout = async (req, res) => {
+  try {
+      res.status(200)
+          .set('Authorization', "")
+          .cookie('access_token', "")
+          .json({ msg: "User unlogged" })
+  } catch (error) {
+      res.status(400).json({ msg: error.message });
+
   }
 };
 
@@ -140,6 +189,7 @@ export default {
     createUser,
     deleteUserByEmail,
     loginUser,
+    logout,
     getAllFavoritesFromUser,
     markAsFavorite,
     unmarkAsFavorite
