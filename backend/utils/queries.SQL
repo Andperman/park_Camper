@@ -21,11 +21,11 @@ INSERT INTO users(username, password, email)
 VALUES
 	('Bolito', '1234567', 'bolito@dominio.com')
 
--- INSERT INTO favorites(user_id, mongo_title, mongo_id)
--- VALUES
--- 	('1', 'Se buscan desarrolladores Fullstack','67306e499fb6d04b2cdea1f5')
--- SELECT *
---     FROM favorites
+INSERT INTO favorites(user_id, mongo_title, mongo_id)
+VALUES
+	('1', 'Se buscan desarrolladores Fullstack','67306e499fb6d04b2cdea1f5')
+SELECT *
+    FROM favorites
 
 SELECT *
     FROM users
