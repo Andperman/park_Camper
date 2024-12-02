@@ -4,12 +4,10 @@ const getAccessToken = express.Router();
 
 getAccessToken.use(async (req, res, next) => {
     const { cookie, authorization } = req.headers;
-    console.log('Authorization Header:', authorization);  // Log para verificar el header
 
+    // Verifica si hay un token en las cabeceras de autorización
     if (authorization && authorization.includes('Bearer')) {
         const token = authorization.split(' ')[1];
-        console.log('Authorization Header:', authorization);
-        console.log('Extracted Token:', token);
         if (token) {
             req.token = token;  // Almacena el token en req.token
             return next();
@@ -18,20 +16,20 @@ getAccessToken.use(async (req, res, next) => {
         }
     }
 
+    // Verifica si hay un token en las cookies
     if (cookie && cookie.includes('access_token=')) {
-        const cookies = cookie.split(';'); 
-        const accessToken = cookies.find(c => c.trim().startsWith('access_token='));
-        if (accessToken) {
-            const token = accessToken.split('=')[1]; // Obtén el token de la cookie
+        const cookies = cookie.split(',');
+        const accessToken = cookies[0];
+        const token = accessToken.split('=')[1];
+        if (token) {
             req.token = token;  // Almacena el token en req.token
             return next();
         } else {
             return res.sendStatus(403);  // Forbidden si no hay token
         }
     }
+
+    return res.sendStatus(403);  // Si no se encuentra el token, retorna Forbidden
 });
-
-
-
 
 export default getAccessToken;

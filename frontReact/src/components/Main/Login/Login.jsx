@@ -44,27 +44,31 @@ const Login = () => {
   };
 
   return (
-    <div>
+
+    <div className='login-container'>
+          <h1>ParkCamper</h1>
+          <img src="/1.png" alt="ParkCamper Logo" className="logo-image" />
       {showRegister ? (
         <Register onClose={() => setShowRegister(false)} />
       ) : (
-        <form onSubmit={handleSubmit}>
-          <h2>Login</h2>
-          <input
+        
+        <form className = "form1" onSubmit={handleSubmit}>
+          <h2 className='modo'>Login</h2>
+          <input className='inputform'
             type="email"
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
           />
-          <input
+          <input className='inputform'
             type="password"
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-          <button type="submit">Login</button>
+          <button  type="submit">Login</button>
           <button type="button" onClick={() => setShowRegister(true)}>
             Create Account
           </button>
@@ -100,23 +104,23 @@ const Register = ({ onClose }) => {
   };
 
   return (
-    <form onSubmit={handleRegister}>
-      <h2>Register</h2>
-      <input
+    <form className = "form1" onSubmit={handleRegister}>
+      <h2 className='modo'>Register</h2>
+      <input className='inputform'
         type="text"
         placeholder="Username"
         value={username}
         onChange={(e) => setUsername(e.target.value)}
         required
       />
-      <input
+      <input className='inputform'
         type="email"
         placeholder="Email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         required
       />
-      <input
+      <input className='inputform'
         type="password"
         placeholder="Password"
         value={password}
@@ -124,7 +128,7 @@ const Register = ({ onClose }) => {
         required
       />
       <button type="submit">Register</button>
-      <button type="button" onClick={onClose}>
+      <button  type="button" onClick={onClose}>
         Cancel
       </button>
     </form>

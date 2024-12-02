@@ -63,24 +63,62 @@ const MapPage = () => {
 
   return (
     <div>
-      <div style={{ margin: '10px' }}>
-        <form onSubmit={handleSearch}>
+      <div style={{ position: 'absolute',
+        top: '680px',  // Ajuste para que no se sobreponga con el header
+        left: '50%',
+        transform: 'translateX(-50%)',
+        zIndex: 1000,
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: '90%',
+        maxWidth: '220px',
+        backgroundColor: '#fff',
+        padding: '5px',
+        borderRadius: '10px',
+        boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',  }}>
+        <form onSubmit={handleSearch} style={{
+          display: 'flex',
+          flexDirection: 'column',
+          width: '60%',
+          alignItems: 'center',
+        }}>
           <input
             type="text"
             value={latitude}
             onChange={(e) => setLatitude(e.target.value)}
             placeholder="Latitud"
-            style={{ padding: '5px' }}
+            style={{  padding: '5px',
+              width: '100%',
+              borderRadius: '5px',
+              border: '1px solid #ccc',
+              fontSize: '14px',
+              marginBottom: '10px', }}
           />
           <input
             type="text"
             value={longitude}
             onChange={(e) => setLongitude(e.target.value)}
             placeholder="Longitud"
-            style={{ padding: '5px', marginLeft: '5px' }}
+            style={{ padding: '5px',
+              width: '100%',
+              borderRadius: '5px',
+              border: '1px solid #ccc',
+              fontSize: '14px',
+              marginBottom: '0px', }}
           />
-          <button type="submit" style={{ padding: '5px 10px', marginLeft: '5px' }}>
-            Buscar
+          <button type="submit" style={{ padding: '5px 5px',
+            backgroundColor:"beige",
+            color: 'white',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: 'pointer',
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center', }}>
+             🔍 
           </button>
         </form>
       </div>
@@ -89,12 +127,23 @@ const MapPage = () => {
       {/* Botón para filtrar las ubicaciones creadas */}
       <button
         onClick={handleFilterCreated}
-        style={{ padding: '5px 10px', marginLeft: '5px' }}>
-        🏷️ Mostrar solo las creadas
+        style={{ position: 'absolute',
+          bottom: '0px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          padding: '10px 10px',
+          backgroundColor: '#ffcc00',
+          color: 'white',
+          border: 'none',
+          borderRadius: '5px',
+          fontSize: '14px',
+          cursor: 'pointer',
+          zIndex: 1000,}}>
+        ⭐ LOS MEJORES
       </button>
 
       {/* Mapa */}
-      <MapContainer center={center} zoom={13} style={{ height: '80vh', width: '100%' }}>
+      <MapContainer center={center} zoom={12} style={{ height: '80vh', width: '100%' }}>
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

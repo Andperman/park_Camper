@@ -1,9 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { FaSearch,FaSignOutAlt, FaStar, FaTree, FaMap } from 'react-icons/fa';  // Nuevos íconos para las páginas
 
 const Header = () => {
-  const { user, loading,logout } = useAuth();
+  const { user, loading, logout } = useAuth();
   if (loading) return <div>Loading...</div>;
   console.log(user);
 
@@ -12,23 +13,31 @@ const Header = () => {
   }
 
   return (
-    <header>
-      <nav>
-        <ul>
+    <header className="header">
+      <nav className="navbar">
+        <ul className="nav-links">
           {/* Condición para usuarios normales */}
           {user.role === 'user' && (
             <>
               <li>
-                <Link to="/">MapPage</Link>
+                <Link to="/">
+                  <FaSearch /> {/* Icono de lupa para MapPage */}
+                </Link>
               </li>
               <li>
-                <Link to="/favorites">Favorites</Link>
+                <Link to="/favorites">
+                  <FaStar /> {/* Icono de estrella para Favorites */}
+                </Link>
               </li>
               <li>
-                <Link to="/profile">Profile</Link>
+                <Link to="/rules">
+                  <FaTree /> {/* Icono de pino para Rules */}
+                </Link>
               </li>
               <li>
-                <button onClick={logout}>Logout</button>
+                <button onClick={logout}>
+                  <FaSignOutAlt /> {/* Icono de salida para Logout */}
+                </button>
               </li>
             </>
           )}
@@ -37,16 +46,24 @@ const Header = () => {
           {user.role === 'admin' && (
             <>
               <li>
-                <Link to="/">MapPage</Link>
+                <Link to="/">
+                  <FaSearch /> {/* Icono de lupa para MapPage */}
+                </Link>
               </li>
               <li>
-                <Link to="/manual-locations">Manual Locations</Link>
+                <Link to="/manual-locations">
+                  <FaMap /> {/* Icono de mapa pequeño para Manual Locations */}
+                </Link>
               </li>
               <li>
-                <Link to="/profile">Profile</Link>
+                <Link to="/rules">
+                  <FaTree /> {/* Icono de pino para Rules */}
+                </Link>
               </li>
               <li>
-                <button onClick={logout}>Logout</button>
+                <button onClick={logout}>
+                  <FaSignOutAlt /> {/* Icono de salida para Logout */}
+                </button>
               </li>
             </>
           )}

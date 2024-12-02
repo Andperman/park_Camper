@@ -57,6 +57,7 @@ const AuthProvider = ({ children }) => {
     setCookie('access_token', token, 3600); 
     setUser(userData); 
   };
+  
   const logout = async () => {
     try {
       await axios.post(

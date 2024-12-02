@@ -1,5 +1,4 @@
 import React from 'react';
-import Footer from './components/Footer';
 import Header from './components/Header';
 import Main from './components/Main'; 
 import { BrowserRouter } from 'react-router-dom';
@@ -12,7 +11,6 @@ function App() {
       <AuthProvider> 
         <Header />
         <Main /> 
-        <Footer />
         </AuthProvider> 
       </BrowserRouter>
     </div>
