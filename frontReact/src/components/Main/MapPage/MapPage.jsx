@@ -2,6 +2,7 @@ import React, { useState, useContext } from 'react';
 import { MapContainer, TileLayer } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import MapView from './MapView';
+import { getTokenFromCookies } from '../../../utils/utils'; 
 import { MapContext } from '../../../context/MapContext';
 import MapService from '../../../services/MapService';
 import axios from 'axios';
@@ -38,10 +39,20 @@ const MapPage = () => {
 
   const handleFilterCreated = async () => {
     try {
-      // Llamada a la API para obtener solo las ubicaciones creadas manualmente
-      const response = await axios.get('http://localhost:3000/api/locations/manual');
-      setLocations(response.data);
-      setOnlyCreated(true);  // Cambiar el estado para indicar que solo se verán las ubicaciones creadas
+      const token = getTokenFromCookies();
+      if (token) {
+        const response = await axios.get('http://localhost:3000/api/locations/manual', {
+          headers: {
+            'Authorization': `Bearer ${token}`,  
+          },
+        });
+  
+        setLocations(response.data);  
+        setOnlyCreated(true);  // Cambia el estado para indicar que solo se verán las ubicaciones creadas
+      } else {
+        console.error('No token found');
+        alert('No se ha encontrado el token');
+      }
     } catch (error) {
       console.error('Error al obtener ubicaciones creadas:', error);
       alert('Error al obtener ubicaciones creadas.');

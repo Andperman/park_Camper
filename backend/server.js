@@ -1,31 +1,30 @@
+
 import express from 'express';
 import cors from 'cors';
-import connectDB from './config/db_mongo.js'; 
+import connectDB from './config/db_mongo.js';
 import { pool } from './config/db_pgSQL.js'; 
-// import locationController from './controllers/location.controller.js'; 
 import locationRoutes from './routes/location.routes.js';
-// Rutas 
-import userRoutes from './routes/user.routes.js'; // Rutas usuarios
-
+import userRoutes from './routes/user.routes.js'; 
 
 const app = express();
 
-//Middleware
-app.use(cors()); 
-app.use(express.json()); 
+// Middleware
+app.use(cors({
+    origin: 'http://localhost:5174', 
+    credentials: true, 
+}));
 
+app.use(express.json()); 
 
 connectDB(); 
 
 // Rutas
-// app.get('/getLocations', locationController.getLocations);
-// app.use('/api/locations', locationRoutes); // Prefijo para rutas de ubicaciones
-app.use('/api', locationRoutes); //rutas localización
-app.use('/api/users', userRoutes); // Prefijo rutas de usuarios
-
+app.use('/api', locationRoutes);  
+app.use('/api/users', userRoutes);  
 
 const port = 3000;
 app.listen(port, () => {
+  console.log(`Server running on http://localhost:${port}`);
   pool.query('SELECT NOW()', (err, res) => {
     if (err) {
       console.error('Error al conectar a la base de datos PostgreSQL:', err);
@@ -34,8 +33,3 @@ app.listen(port, () => {
     }
   });
 });
-
-
-
-
-

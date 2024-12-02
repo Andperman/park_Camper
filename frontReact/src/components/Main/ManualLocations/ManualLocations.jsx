@@ -1,9 +1,8 @@
 
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-
+import { getTokenFromCookies } from '../../../utils/utils';
 const ManualLocations = () => {
-  // Estado para las ubicaciones creadas manualmente
   const [locations, setLocations] = useState([]);
   
   // Estado para el formulario
@@ -19,11 +18,18 @@ const ManualLocations = () => {
     fecha: '',
   });
 
+  // Obtener el token de la cookie
+  const token = getTokenFromCookies('access_token');
+
   // Cargar las ubicaciones creadas manualmente
   useEffect(() => {
     const fetchLocations = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/api/locations/manual'); 
+        const response = await axios.get('http://localhost:3000/api/locations/manual', {
+          headers: {
+            'Authorization': `Bearer ${token}`, 
+          },
+        });
         setLocations(response.data);
       } catch (error) {
         console.error('Error fetching locations:', error);
@@ -31,7 +37,7 @@ const ManualLocations = () => {
     };
 
     fetchLocations();
-  }, []);
+  }, [token]);
 
   // Manejo de cambios en el formulario
   const handleChange = (e) => {
@@ -47,11 +53,19 @@ const ManualLocations = () => {
     
     try {
       // Enviar los datos al backend para crear la nueva ubicación
-      await axios.post('http://localhost:3000/api/locations', formData); 
+      await axios.post('http://localhost:3000/api/locations', formData, {
+        headers: {
+          'Authorization': `Bearer ${token}`,  
+        },
+      }); 
       alert('Ubicación creada exitosamente');
       
       // Volver a cargar las ubicaciones después de crear una nueva
-      const response = await axios.get('http://localhost:3000/api/locations/manual');
+      const response = await axios.get('http://localhost:3000/api/locations/manual', {
+        headers: {
+          'Authorization': `Bearer ${token}`, 
+        },
+      });
       setLocations(response.data);
       
       // Limpiar el formulario
@@ -75,11 +89,19 @@ const ManualLocations = () => {
   // Eliminar una ubicación
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:3000/api/locations/${id}`);
+      await axios.delete(`http://localhost:3000/api/locations/${id}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`, 
+        },
+      });
       alert('Ubicación eliminada exitosamente');
       
       // Volver a cargar las ubicaciones después de eliminar
-      const response = await axios.get('http://localhost:3000/api/locations/manual');
+      const response = await axios.get('http://localhost:3000/api/locations/manual', {
+        headers: {
+          'Authorization': `Bearer ${token}`, 
+        },
+      });
       setLocations(response.data);
     } catch (error) {
       console.error('Error deleting location:', error);

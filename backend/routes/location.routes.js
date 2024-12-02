@@ -1,24 +1,16 @@
-// const express = require('express');
-// const router = express.Router();
-// const locationController = require('../controllers/location.controller');
-
-// // Rutas para CRUD de ubicaciones
-// router.post('/locations', locationController.createLocation);
-// router.get('/locations', locationController.getAllLocations);
-// router.delete('/locations/:id', locationController.deleteLocation);
-
-// module.exports = router;
-
 import express from 'express';
 import locationController from '../controllers/location.controller.js';
+import getAccessToken from '../middlewares/getAccessToken.js';
+import decodeToken from '../middlewares/decodeToken.js';
 
 const router = express.Router();
 
-router.get('/locations', locationController.getLocations);
-router.get('/locations/manual', locationController.getManualLocations); //obtener las creadas solo 
-router.post('/locations', locationController.createLocation);
-router.delete('/locations/:id', locationController.deleteLocation);
+// Rutas accesibles tanto para admin como para user
+router.get('/locations', getAccessToken, decodeToken, locationController.getLocations);  // Acceso permitido para admin y user
+router.get('/locations/manual', getAccessToken, decodeToken, locationController.getManualLocations); // Acceso permitido para admin y user
 
-
+// Rutas accesibles solo para admin
+router.post('/locations', getAccessToken, decodeToken, locationController.createLocation); // Solo admin
+router.delete('/locations/:id', getAccessToken, decodeToken, locationController.deleteLocation); // Solo admin
 
 export default router;
