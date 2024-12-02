@@ -1,44 +1,51 @@
-// import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../../../context/AuthContext';  // El contexto de autenticación
+import axios from 'axios';
 
-// const Profile = () => {
-//     const [user, setUser] = useState(null);
+const Profile = () => {
+    const { user, logout } = useAuth();  // Aquí obtenemos el usuario desde el contexto (si está autenticado)
+    const [profile, setProfile] = useState(null);  // Estado para almacenar los datos del perfil
+    const [loading, setLoading] = useState(true);  // Estado para controlar la carga
 
-//     useEffect(() => {
-//         const fetchUser = async () => {
-//             const response = await fetch('/api/users/me', {
-//                 headers: { Authorization: `Bearer ${getCookie('access_token')}` },
-//             });
-//             if (response.ok) {
-//                 const data = await response.json();
-//                 setUser(data);
-//             } else {
-//                 console.error('Failed to fetch user data');
-//             }
-//         };
-//         fetchUser();
-//     }, []);
+    useEffect(() => {
+        const getProfile = async () => {
+            if (!user) return;  // Si no hay usuario autenticado, no hacer la solicitud
 
-//     const handleLogout = () => {
-//         document.cookie = 'access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
-//         window.location.reload(); // O redirigir a login
-//     };
+            setLoading(true);  // Iniciar la carga
 
-//     return user ? (
-//         <div>
-//             <h2>Profile</h2>
-//             <p>Username: {user.username}</p>
-//             <p>Email: {user.email}</p>
-//             <button onClick={handleLogout}>Logout</button>
-//         </div>
-//     ) : (
-//         <p>Loading...</p>
-//     );
-// };
+            try {
+                // Hacer una solicitud GET al backend con el email del usuario
+                const response = await axios.get('http://localhost:3000/api/user/email', {
+                    params: { email: user.email },  // Pasamos el email del usuario autenticado
+                    withCredentials: true,  // Asegúrate de enviar las cookies si son necesarias
+                });
+                setProfile(response.data);  // Guardamos los datos del perfil
+            } catch (error) {
+                console.error("Error fetching profile:", error);
+            } finally {
+                setLoading(false);  // Finaliza la carga
+            }
+        };
 
-// const getCookie = (name) => {
-//     const value = `; ${document.cookie}`;
-//     const parts = value.split(`; ${name}=`);
-//     if (parts.length === 2) return parts.pop().split(';').shift();
-// };
+        getProfile();
+    }, [user]);  // Rehacer la solicitud cuando el usuario cambie
 
-// export default Profile;
+    if (loading) {
+        return <p>Loading...</p>;  // Mostrar un mensaje mientras se carga el perfil
+    }
+
+    if (!profile) {
+        return <p>No profile data found</p>;  // Si no se encontró el perfil
+    }
+
+    return (
+        <div>
+            <h2>Profile</h2>
+            <p>Username: {profile.username}</p>
+            <p>Email: {profile.email}</p>
+            <button onClick={logout}>Logout</button>
+        </div>
+    );
+};
+
+export default Profile;

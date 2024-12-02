@@ -1,8 +1,6 @@
 import { pool } from '../config/db_pgSQL.js';
 import { queries } from '../utils/queries.js';
 import bcrypt from 'bcryptjs';
-//falta favoritos
-
 
 // GET
 export const getAllUsers = async () => {
@@ -46,8 +44,8 @@ export const createUser = async (user) => {
     // Si el username es null o undefined, asigna uno por defecto
     const finalUsername = username ? username : email.split('@')[0]; 
     try {
-        client = await pool.connect(); // Espera a abrir conexion
-        const hashedPassword = password ? await bcrypt.hash(password, 10) : null; // Si hay contraseña, la hasheamos
+        client = await pool.connect();
+        const hashedPassword = password ? await bcrypt.hash(password, 10) : null; 
         const data = await client.query(queries.createUser,[finalUsername, email, hashedPassword])
         result = data.rowCount
     } catch (err) {
